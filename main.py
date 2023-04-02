@@ -25,18 +25,24 @@ def process_queries(queries):
     for cur_query in queries:
         hashed_num = hash_func(cur_query.number)
         if cur_query.type == 'add':
-            if cur_query.name not in contacts[hashed_num]:
-                contacts[hashed_num].append(cur_query.name)
-        elif cur_query.type == 'del':
             if cur_query.name in contacts[hashed_num]:
-                contacts[hashed_num].remove(cur_query.name)
+                for i, entry in enumerate(contacts[hashed_num]):
+                    if entry[0] == cur_query.name:
+                        contacts[hashed_num][i] = (cur_query.name, cur_query.number)
+                        break
+            else:
+                contacts[hashed_num].append((cur_query.name, cur_query.number))
+        elif cur_query.type == 'del':
+            for i, entry in enumerate(contacts[hashed_num]):
+                if entry[1] == cur_query.number:
+                    contacts[hashed_num].pop(i)
+                    break
         else:
-            names = contacts[hashed_num]
+            names = [entry[0] for entry in contacts[hashed_num] if entry[1] == cur_query.number]
             if names:
                 result.append(names[-1])
             else:
                 result.append('not found')
-            contacts[hashed_num] = names[:-1]
     return result
 
 if __name__ == '__main__':
