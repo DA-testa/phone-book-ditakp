@@ -1,16 +1,9 @@
-from collections import defaultdict
-
 class Query:
     def __init__(self, query):
         self.type = query[0]
         self.number = int(query[1])
         if self.type == 'add':
             self.name = query[2]
-
-def hash_func(number):
-    prime = 10**9 + 7
-    x = 263
-    return (x * number) % prime
 
 def read_queries():
     n = int(input())
@@ -21,26 +14,21 @@ def write_responses(result):
 
 def process_queries(queries):
     result = []
-    contacts = defaultdict(list)
+    # Use dict to store contacts
+    contacts = {}
     for cur_query in queries:
-        hashed_num = hash_func(cur_query.number)
         if cur_query.type == 'add':
-            if cur_query.name in contacts[hashed_num]:
-                for i, entry in enumerate(contacts[hashed_num]):
-                    if entry[0] == cur_query.name:
-                        contacts[hashed_num][i] = (cur_query.name, cur_query.number)
-                        break
-            else:
-                contacts[hashed_num].append((cur_query.name, cur_query.number))
+            # Use dict.update to add or update contact
+            contacts[cur_query.number] = cur_query.name
         elif cur_query.type == 'del':
-            for i, entry in enumerate(contacts[hashed_num]):
-                if entry[1] == cur_query.number:
-                    contacts[hashed_num].pop(i)
-                    break
+            # Use dict.pop to delete contact if it exists
+            contacts.pop(cur_query.number, None)
         else:
-            names = [entry[0] for entry in contacts[hashed_num] if entry[1] == cur_query.number]
-            if names:
-                result.append(names[-1])
+            # Use dict.get to find contact by number
+            # Set name to None if contact not found
+            name = contacts.get(cur_query.number, None)
+            if name is not None:
+                result.append(name)
             else:
                 result.append('not found')
     return result
