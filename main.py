@@ -16,25 +16,18 @@ def write_responses(result):
 
 def process_queries(queries):
     result = []
-    # Use hash table to store contacts
+
     contacts = {}
     for cur_query in queries:
         if cur_query.type == 'add':
-            # Use setdefault to add or update contact
             contacts[cur_query.number] = cur_query.name
         elif cur_query.type == 'del':
-            # Use pop to delete contact if it exists
-            contacts.pop(cur_query.number, None)
+            if cur_query.number in contacts:
+                del contacts[cur_query.number]
         else:
-            # Use get to find contact by number
-            # Set name to None if contact not found
-            name = contacts.get(cur_query.number, None)
-            if name is not None:
-                result.append(name)
-            else:
-                result.append('not found')
+            name = contacts.get(cur_query.number, 'not found')
+            result.append(name)
     return result
 
 if __name__ == '__main__':
     write_responses(process_queries(read_queries()))
-
